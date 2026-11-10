@@ -1,0 +1,76 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#container{
+    margin: 1.25rem auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 50%;
+    max-width: 60vw;
+    min-height: 65vh;
+    border: 0.2rem solid black;
+    border-radius: 2rem;
+    gap: 0.2rem;
+    background: black;
+    overflow: hidden;
+}
+
+#title{
+    font-size: 4rem;
+    text-align: center;
+}
+
+#scoreboard{
+    margin: 0.6rem auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 30vw;
+    min-height: 10vh;
+    background: white;
+    overflow: hidden;
+    gap: 0.2rem;
+}
+
+.tile{
+    display: flex;
+    background: white; 
+    font-weight: bold;
+    height: auto;
+    width: auto;
+    font-size: 5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.score-tile{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.player-label{
+    color: slategray;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+#player1-score{
+    color: red;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+#ties{
+    color: orange;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+#player2-score{
+    color: blue;
+    font-size: 2rem;
+    font-weight: bold;
+}

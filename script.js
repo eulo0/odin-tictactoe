@@ -10,25 +10,15 @@ const gameBoard = (function(){
         board[index] = marker;
     }
 
-    function printBoard(){
-        let text = "";
-        for (let i = 0; i < 9; i++){
-            if (board[i] === ""){
-                text += "   ";
-            } else {
-                text += " " + board[i] + " ";
-            }
+    function displayBoard(){
+        const gameBoard = document.getElementById("container");
 
-            if (i === 2 || i === 5){
-                text += "\n---+---+---\n";
-            } else if (i !== 8){
-                text += "|";
-            }
-        }
-        console.log(text);
     }
 
-    return { getCell, setCell, printBoard };
+    function createCell(){
+        document.createElement("div");
+        document.classList.add("tile");
+    }
 })();
 
 // factory for making players

@@ -34,15 +34,20 @@
     gap: 0.2rem;
 }
 
-.tile{
+.inactive-tile,
+.active-tile{
     display: flex;
     background: white; 
-    font-weight: bold;
+    font-weight: medium;
     height: auto;
     width: auto;
     font-size: 5rem;
     justify-content: center;
     align-items: center;
+}
+
+.active-tile:hover{
+    background: lightgray;
 }
 
 .score-tile{
@@ -74,3 +79,12 @@
     font-size: 2rem;
     font-weight: bold;
 }
+
+.player1-color{
+    color: red;
+}
+
+.player2-color{
+    color: blue;
+}
+

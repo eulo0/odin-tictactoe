@@ -10,11 +10,18 @@ const gameBoard = (function(){
         board[index] = marker;
     }
 
+    // for debugging 
     function displayBoard(){
         console.log(board);
     }
 
-    return { displayBoard, setCell }
+    function resetBoard(){
+        for (let i = 0; i < board.length; i++){
+            setCell(i, "");
+        }
+    }
+
+    return { displayBoard, getCell, setCell, resetBoard }
 })();
 
 // factory for making players
@@ -39,20 +46,40 @@ const game = (function(){
         else {
             currentPlayer = player1;
         }
-        console.log(currentPlayer.name);
     }
 
-    function playRound(index){
-        if (!placeMark(index)){
-            return;
+    function checkWin(){
+        const winConditions = [
+            [0, 1, 2],
+            [3, 4 ,5], 
+            [6, 7, 8], 
+            [0, 3, 6],
+            [1, 4, 7], 
+            [2, 5, 8],
+            [0, 4, 8], 
+            [2, 4, 6]
+        ];
+        for (const [a, b, c] of winConditions){
+            // checks for wins by seeing if all cells are the same and if one of the cells isn't empty
+            if (gameBoard.getCell(a) !== "" && gameBoard.getCell(a) === gameBoard.getCell(b) && gameBoard.getCell(a) === gameBoard.getCell(c)){
+                gameBoard.resetBoard();
+                return true ;
+            }
         }
-        switchTurn();
+
+        return false; 
     }
-    return { getCurrentPlayer, playRound, switchTurn };
+
+    return { getCurrentPlayer, switchTurn, checkWin };
 })();
 
 // handles frontend logic
 const displayController = (function(){
+    const resetBtn = document.getElementById("reset");
+    resetBtn.addEventListener("click", () => {
+
+    })
+
     const tiles = (function(){
         const domArray = new Array(9);
         for (let i = 0; i < 9; i++){
@@ -61,12 +88,14 @@ const displayController = (function(){
             tileDom.id = `tile${i}`;
             domArray[i] = tileDom; 
             tileDom.addEventListener("click", () => {
+                gameBoard.displayBoard();
                 const player = game.getCurrentPlayer(); 
                 gameBoard.setCell(i, player.marker);
                 tileDom.textContent = player.marker;
                 tileDom.classList.add(player.color);
                 game.switchTurn();
-                gameBoard.printBoard();
+                gameBoard.displayBoard();
+                game.checkWin();
             }, { once:true });
         }
         return domArray;
@@ -79,5 +108,6 @@ const displayController = (function(){
             container.append(tile);
         }
     })();
+
 
 })();

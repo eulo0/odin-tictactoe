@@ -26,7 +26,7 @@ const gameBoard = (function(){
 
 // factory for making players
 function createPlayer(name, marker, color){
-    return { name: name, marker: marker, color: color };
+    return { name: name, marker: marker, color: color, score: 0};
 }
 
 const game = (function(){
@@ -66,7 +66,6 @@ const game = (function(){
                 return true ;
             }
         }
-
         return false; 
     }
 
@@ -77,16 +76,19 @@ const game = (function(){
 const displayController = (function(){
     const resetBtn = document.getElementById("reset");
     resetBtn.addEventListener("click", () => {
-
+        intro();
+        resetBoard();
     })
 
-    const tiles = (function(){
+    function render(){
         const domArray = new Array(9);
         for (let i = 0; i < 9; i++){
             const tileDom = document.createElement("div");
             tileDom.classList.add("active-tile");
             tileDom.id = `tile${i}`;
             domArray[i] = tileDom; 
+            tileDom.addEventListener("mouseenter", enterEffect);
+            tileDom.addEventListener("mouseleave", leaveEffect);
             tileDom.addEventListener("click", () => {
                 gameBoard.displayBoard();
                 const player = game.getCurrentPlayer(); 
@@ -96,18 +98,41 @@ const displayController = (function(){
                 game.switchTurn();
                 gameBoard.displayBoard();
                 game.checkWin();
+                tileDom.removeEventListener("mouseenter", enterEffect); 
+                tileDom.removeEventListener("mouseleave", leaveEffect);
             }, { once:true });
+            container.append(tileDom);
         }
         return domArray;
-    })();
+    };
 
-    // appends the dom elements to the container 
-    (function render(){
-        const container = document.getElementById("container");
-        for (tile of tiles){
-            container.append(tile);
-        }
-    })();
+    // allows users to input their names
+    function intro(){
+        const dialog = document.getElementById("intro");
+        const form = document.getElementById("form");
+        const player1_name = document.getElementById("player1-label");
+        const player2_name = document.getElementById("player2-label");
+        dialog.showModal();
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            player1_name.textContent = formData.get("player1_name");
+            player2_name.textContent = formData.get("player2_name");
+            dialog.close();
+            render();
+        });
+    };
 
+    function enterEffect(tile){
+        const player = game.getCurrentPlayer(); 
+        event.currentTarget.classList.add(player.color, "active-tile2");
+        event.currentTarget.textContent = player.marker;
+    }
 
+    function leaveEffect(tile){
+        event.currentTarget.textContent = "";
+        event.currentTarget.classList.remove("active-tile2");
+    }
+
+    intro();
 })();

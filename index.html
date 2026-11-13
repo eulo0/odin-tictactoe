@@ -3,23 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
 </head>
 <body>
+    <dialog id="intro"> 
+        <p class="title">Enter your usernames</p>
+        <form id="form">
+            <div id="form-content">
+                <div id="left">
+                    <label for="title">Player 1</label>
+                    <input type="text" name="player1_name" required>
+                </div>
+                <div id="right">
+                    <label for="title">Player 2</label>
+                    <input type="text" name="player2_name" required>
+                </div>
+            </div>
+            <button id="submit" type="submit">Play</button>
+        </form>
+    </dialog>
     <p id="title">Tic Tac Toe</p>
     <div id="scoreboard">
         <div class="score-tile">
-            <p class="player-label">Player 1</p>
+            <p id="player1-label">Player 1</p>
             <p id="player1-score">0</p>
         </div>
         <div class="score-tile">
-            <p class="player-label">Ties</p>
+            <p id="tie-label">Ties</p>
             <p id="ties">0</p>
         </div>
         <div class="score-tile">
-            <p class="player-label">Player 2</p>
+            <p id="player2-label">Player 2</p>
             <p id="player2-score">0</p>
         </div>
     </div>

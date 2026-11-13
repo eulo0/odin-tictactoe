@@ -4,6 +4,17 @@
     background: black;
 }
 
+#intro{
+    margin: auto;
+    width: 50%;
+    border-radius: 1rem;
+    border: 2px solid white;
+}
+
+#intro::backdrop{
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
 #container{
     margin: 0 auto;
     display: grid;
@@ -48,7 +59,7 @@
     align-items: center;
 }
 
-.active-tile:hover{
+.active-tile2{
     background: lightgray;
 }
 
@@ -56,12 +67,19 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    min-width: 0;
 }
 
-.player-label{
+#player1-label,
+#player2-label,
+#tie-label{
     color: lightblue;
     font-size: 1.2rem;
     font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    overflow: hidden;
+    max-width: 100%;
 }
 
 #player1-score{
@@ -105,4 +123,51 @@
 
 #reset:hover{
     background: pink;
+}
+
+label{
+    color: white;
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom:0.8rem;
+    text-align: center;
+}
+
+input{
+    display: block;
+    color: white;
+    font-size: 1.25rem;
+    width: 90%;
+    margin-inline: auto;
+    border: 0.2rem solid white;
+    border-radius: 0.6rem;
+    text-align: center;
+
+}
+
+#intro .title{
+    font-size: 3rem;
+    text-align: center;
+    color:white;
+    box-shadow: 0 3px 2px 0 lightblue;
+    margin: 0.8rem 0;
+}
+
+#form-content{
+    display: flex;
+    justify-content: space-between;
+    margin: 4rem;
+}
+
+#submit{ 
+    display: block;
+    margin: 0 auto;
+    width: 15rem;
+    height: 4rem;
+    font-size: 2rem;
+    border-radius: 0.8rem;
+    background: lightgreen;
+    color: white;
+    border: 0.3rem solid darkgreen;
+    margin-bottom: 2rem;
 }

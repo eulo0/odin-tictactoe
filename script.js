@@ -21,7 +21,37 @@ const gameBoard = (function(){
         }
     }
 
-    return { displayBoard, getCell, setCell, resetBoard }
+    function checkWin(){
+        const winConditions = [
+            [0, 1, 2],
+            [3, 4 ,5], 
+            [6, 7, 8], 
+            [0, 3, 6],
+            [1, 4, 7], 
+            [2, 5, 8],
+            [0, 4, 8], 
+            [2, 4, 6]
+        ];
+        for (const [a, b, c] of winConditions){
+            // checks for wins by seeing if all cells are the same and if one of the cells isn't empty
+            if (board[a] !== "" && board[a] === board[b] && board[a] === board[c]){
+                resetBoard();
+                return true ;
+            }
+        }
+        return false; 
+    }
+
+    function isFull(){
+        for (const tile of board){
+            if (tile === ""){
+                return false; 
+            }
+        }
+        return true
+    }
+
+    return { displayBoard, getCell, setCell, resetBoard, checkWin, isFull }
 })();
 
 // factory for making players
@@ -32,6 +62,7 @@ function createPlayer(name, marker, color){
 const game = (function(){
     const player1 = createPlayer("Player 1", "X", "player1-color");
     const player2 = createPlayer("Player 2", "O", "player2-color");
+    let ties = 0;
     let currentPlayer = player1;
 
     function getPlayer1Score(){
@@ -46,8 +77,22 @@ const game = (function(){
         return currentPlayer; 
     }
 
+    function getTies(){
+        return ties;
+    }
+
     function incrementCurrentScore(){
         currentPlayer.score += 1;
+    }
+
+    function incrementTies(){
+        ties += 1;
+    }
+
+    function resetScores(){
+        player1.score = 0;
+        player2.score = 0; 
+        ties = 0;
     }
 
     // function that keeps track of player turn and changes it
@@ -60,38 +105,28 @@ const game = (function(){
         }
     }
 
-    function checkWin(){
-        const winConditions = [
-            [0, 1, 2],
-            [3, 4 ,5], 
-            [6, 7, 8], 
-            [0, 3, 6],
-            [1, 4, 7], 
-            [2, 5, 8],
-            [0, 4, 8], 
-            [2, 4, 6]
-        ];
-        for (const [a, b, c] of winConditions){
-            // checks for wins by seeing if all cells are the same and if one of the cells isn't empty
-            if (gameBoard.getCell(a) !== "" && gameBoard.getCell(a) === gameBoard.getCell(b) && gameBoard.getCell(a) === gameBoard.getCell(c)){
-                gameBoard.resetBoard();
-                return true ;
-            }
-        }
-        return false; 
+    function restartTurn(){
+        currentPlayer = player1;
     }
 
-    return { getPlayer1Score, getPlayer2Score, getCurrentPlayer, incrementCurrentScore, switchTurn, checkWin };
+    return { getPlayer1Score, getPlayer2Score, getCurrentPlayer, getTies, incrementCurrentScore, incrementTies, switchTurn, resetScores, restartTurn};
 })();
 
 // handles frontend logic
 const displayController = (function(){
+    const container = document.getElementById("container");
     const nextBtn = document.getElementById("next-round");
     const resetBtn = document.getElementById("reset");
     resetBtn.addEventListener("click", () => {
+        clearTiles();
         intro();
-        resetBoard();
+        gameBoard.resetBoard();
     })
+    nextBtn.addEventListener("click", () => {
+        clearTiles();
+        gameBoard.resetBoard();
+        render();
+    });
 
     function render(){
         const domArray = new Array(9);
@@ -110,8 +145,15 @@ const displayController = (function(){
                 tileDom.classList.add(player.color);
                 game.switchTurn();
                 gameBoard.displayBoard();
-                if (game.checkWin()){
+                if (gameBoard.checkWin()){
                     game.switchTurn(); // to ensure that the winning player gets the point
+                    game.incrementCurrentScore();
+                    roundOver();
+                }
+                // logic whenever there is a tie
+                else if (gameBoard.isFull()){
+                    game.restartTurn();
+                    game.incrementTies();
                     roundOver();
                 }
                 tileDom.removeEventListener("mouseenter", enterEffect); 
@@ -122,6 +164,10 @@ const displayController = (function(){
         }
         return domArray;
     };
+
+    function clearTiles(){
+        container.textContent = "";
+    }
 
     // allows users to input their names
     function intro(){
@@ -143,7 +189,6 @@ const displayController = (function(){
 
     // 
     function roundOver(){
-        game.incrementCurrentScore();
         nextBtn.style.visibility = "visible";
         setScore();
     }
@@ -151,8 +196,10 @@ const displayController = (function(){
     function setScore(){
         const player1ScoreLabel =  document.getElementById("player1-score");
         const player2ScoreLabel = document.getElementById("player2-score");
+        const ties = document.getElementById("ties");
         player1ScoreLabel.textContent = game.getPlayer1Score();
         player2ScoreLabel.textContent = game.getPlayer2Score();
+        ties.textContent = game.getTies();
     }
 
     function enterEffect(tile){

@@ -34,8 +34,20 @@ const game = (function(){
     const player2 = createPlayer("Player 2", "O", "player2-color");
     let currentPlayer = player1;
 
+    function getPlayer1Score(){
+        return player1.score;
+    }
+
+    function getPlayer2Score(){
+        return player2.score;
+    }
+
     function getCurrentPlayer(){
         return currentPlayer; 
+    }
+
+    function incrementCurrentScore(){
+        currentPlayer.score += 1;
     }
 
     // function that keeps track of player turn and changes it
@@ -69,11 +81,12 @@ const game = (function(){
         return false; 
     }
 
-    return { getCurrentPlayer, switchTurn, checkWin };
+    return { getPlayer1Score, getPlayer2Score, getCurrentPlayer, incrementCurrentScore, switchTurn, checkWin };
 })();
 
 // handles frontend logic
 const displayController = (function(){
+    const nextBtn = document.getElementById("next-round");
     const resetBtn = document.getElementById("reset");
     resetBtn.addEventListener("click", () => {
         intro();
@@ -97,9 +110,13 @@ const displayController = (function(){
                 tileDom.classList.add(player.color);
                 game.switchTurn();
                 gameBoard.displayBoard();
-                game.checkWin();
+                if (game.checkWin()){
+                    game.switchTurn(); // to ensure that the winning player gets the point
+                    roundOver();
+                }
                 tileDom.removeEventListener("mouseenter", enterEffect); 
                 tileDom.removeEventListener("mouseleave", leaveEffect);
+                tileDom.classList.remove("active-tile2");
             }, { once:true });
             container.append(tileDom);
         }
@@ -108,6 +125,7 @@ const displayController = (function(){
 
     // allows users to input their names
     function intro(){
+        nextBtn.style.visibility = "hidden";
         const dialog = document.getElementById("intro");
         const form = document.getElementById("form");
         const player1_name = document.getElementById("player1-label");
@@ -122,6 +140,20 @@ const displayController = (function(){
             render();
         });
     };
+
+    // 
+    function roundOver(){
+        game.incrementCurrentScore();
+        nextBtn.style.visibility = "visible";
+        setScore();
+    }
+
+    function setScore(){
+        const player1ScoreLabel =  document.getElementById("player1-score");
+        const player2ScoreLabel = document.getElementById("player2-score");
+        player1ScoreLabel.textContent = game.getPlayer1Score();
+        player2ScoreLabel.textContent = game.getPlayer2Score();
+    }
 
     function enterEffect(tile){
         const player = game.getCurrentPlayer(); 

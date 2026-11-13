@@ -23,10 +23,7 @@
     width: 50%;
     max-width: 60vw;
     min-height: 65vh;
-    border: 0.4rem solid navy;
-    border-radius: 2rem;
     gap: 0.2rem;
-    background: navy;
     overflow: hidden;
 }
 
@@ -57,6 +54,8 @@
     font-size: 5rem;
     justify-content: center;
     align-items: center;
+    border: 0.2rem solid black;
+    border-radius: 0.8rem;
 }
 
 .active-tile2{
@@ -109,20 +108,19 @@
 }
 
 #reset{
-    display: block;
     margin: 0 auto;
     width: 15rem;
     height: 4rem;
     font-size: 2rem;
     border-radius: 0.8rem;
-    background: red;
+    background: rgb(208, 0, 0);
     color: white;
-    border: 0.3rem solid pink;
-    margin-top: 1.25rem;
+    border: 0.3rem solid rgb(251, 125, 125); 
+    grid-column: 2;
 }
 
 #reset:hover{
-    background: pink;
+    background: rgb(146, 0, 0);
 }
 
 label{
@@ -159,15 +157,32 @@ input{
     margin: 4rem;
 }
 
-#submit{ 
+#submit,
+#next-round{ 
     display: block;
     margin: 0 auto;
     width: 15rem;
     height: 4rem;
     font-size: 2rem;
     border-radius: 0.8rem;
-    background: lightgreen;
+    background: rgb(0, 105, 0); 
     color: white;
-    border: 0.3rem solid darkgreen;
+    border: 0.3rem solid rgb(8, 210, 8);  
     margin-bottom: 2rem;
+    grid-column: 3;
+}
+
+#submit:hover,
+#next-round:hover{
+    background-color: rgb(0, 69, 0); 
+}
+
+#button-group{
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    margin: 0 auto;
+    width: 50%;
+    max-width: 60vw;
+    margin-top: 1.25rem;
 }

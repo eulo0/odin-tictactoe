@@ -1,10 +1,6 @@
 // a place to store the game board
 const gameBoard = (function(){
-    const board = ["","","","","","","","",""]
-
-    function getCell(index){
-        return board[index];
-    }
+    const board = ["","","","","","","","",""];
 
     function setCell(index, marker){
         board[index] = marker;
@@ -51,7 +47,7 @@ const gameBoard = (function(){
         return true
     }
 
-    return { displayBoard, getCell, setCell, resetBoard, checkWin, isFull }
+    return { displayBoard, setCell, resetBoard, checkWin, isFull }
 })();
 
 // factory for making players
@@ -75,6 +71,23 @@ const game = (function(){
 
     function getCurrentPlayer(){
         return currentPlayer; 
+    }
+
+    function getCurrentColor(){
+        return currentPlayer.color;
+    }
+
+    function getCurrentMarker(){
+        return currentPlayer.marker;
+    }
+
+    function getOtherColor(){
+        if (currentPlayer === player1){
+            return player2.color;
+        }
+        else{
+            return player1.color;
+        }
     }
 
     function getTies(){
@@ -109,7 +122,8 @@ const game = (function(){
         currentPlayer = player1;
     }
 
-    return { getPlayer1Score, getPlayer2Score, getCurrentPlayer, getTies, incrementCurrentScore, incrementTies, switchTurn, resetScores, restartTurn};
+    return { getPlayer1Score, getPlayer2Score, getCurrentColor, getOtherColor, getTies, getCurrentMarker, 
+             incrementCurrentScore, incrementTies, switchTurn, resetScores, restartTurn};
 })();
 
 // handles frontend logic
@@ -129,40 +143,16 @@ const displayController = (function(){
     });
 
     function render(){
-        const domArray = new Array(9);
+        nextBtn.style.visibility = "hidden";
         for (let i = 0; i < 9; i++){
             const tileDom = document.createElement("div");
-            tileDom.classList.add("active-tile");
-            tileDom.id = `tile${i}`;
-            domArray[i] = tileDom; 
+            tileDom.classList.add("inactive-tile");
+            tileDom.dataset.id = i;
             tileDom.addEventListener("mouseenter", enterEffect);
             tileDom.addEventListener("mouseleave", leaveEffect);
-            tileDom.addEventListener("click", () => {
-                gameBoard.displayBoard();
-                const player = game.getCurrentPlayer(); 
-                gameBoard.setCell(i, player.marker);
-                tileDom.textContent = player.marker;
-                tileDom.classList.add(player.color);
-                game.switchTurn();
-                gameBoard.displayBoard();
-                if (gameBoard.checkWin()){
-                    game.switchTurn(); // to ensure that the winning player gets the point
-                    game.incrementCurrentScore();
-                    roundOver();
-                }
-                // logic whenever there is a tie
-                else if (gameBoard.isFull()){
-                    game.restartTurn();
-                    game.incrementTies();
-                    roundOver();
-                }
-                tileDom.removeEventListener("mouseenter", enterEffect); 
-                tileDom.removeEventListener("mouseleave", leaveEffect);
-                tileDom.classList.remove("active-tile2");
-            }, { once:true });
+            tileDom.addEventListener("click", renderTiles, { once:true });
             container.append(tileDom);
         }
-        return domArray;
     };
 
     function clearTiles(){
@@ -191,6 +181,11 @@ const displayController = (function(){
     function roundOver(){
         nextBtn.style.visibility = "visible";
         setScore();
+        for (const tile of container.children){
+            tile.removeEventListener("mouseenter", enterEffect); 
+            tile.removeEventListener("mouseleave", leaveEffect);
+            tile.removeEventListener("click", renderTiles);
+        }
     }
 
     function setScore(){
@@ -203,15 +198,44 @@ const displayController = (function(){
     }
 
     function enterEffect(tile){
-        const player = game.getCurrentPlayer(); 
-        event.currentTarget.classList.add(player.color, "active-tile2");
-        event.currentTarget.textContent = player.marker;
+        const playerColor = game.getCurrentColor();
+        const playerMarker = game.getCurrentMarker();
+        event.currentTarget.classList.add(playerColor, "active-tile");
+        event.currentTarget.textContent = playerMarker;
     }
 
     function leaveEffect(tile){
+        const playerColor = game.getCurrentColor();
         event.currentTarget.textContent = "";
-        event.currentTarget.classList.remove("active-tile2");
+        event.currentTarget.classList.remove("active-tile");
+        event.currentTarget.classList.remove(playerColor);
     }
 
+    function renderTiles(tile){
+        const playerColor = game.getCurrentColor();
+        const otherColor = game.getOtherColor();
+        const playerMarker = game.getCurrentMarker();
+        gameBoard.setCell(Number(tile.currentTarget.dataset.id), playerMarker);
+        tile.currentTarget.textContent = playerMarker;
+        tile.currentTarget.classList.remove(otherColor);
+        tile.currentTarget.classList.add(playerColor);
+        game.switchTurn();
+        gameBoard.displayBoard();
+        if (gameBoard.checkWin()){
+            game.switchTurn(); // to ensure that the winning player gets the point
+            game.incrementCurrentScore();
+            roundOver();
+        }
+        // logic whenever there is a tie
+        else if (gameBoard.isFull()){
+            game.restartTurn();
+            game.incrementTies();
+            roundOver();
+        }
+        tile.currentTarget.removeEventListener("mouseenter", enterEffect); 
+        tile.currentTarget.removeEventListener("mouseleave", leaveEffect);
+        tile.currentTarget.classList.remove("active-tile");
+    }
     intro();
+
 })();

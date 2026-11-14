@@ -44,8 +44,7 @@
     gap: 0.2rem;
 }
 
-.inactive-tile,
-.active-tile{
+.inactive-tile{
     display: flex;
     background: white; 
     font-weight: medium;
@@ -58,7 +57,7 @@
     border-radius: 0.8rem;
 }
 
-.active-tile2{
+.active-tile{
     background: lightgray;
 }
 

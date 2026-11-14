@@ -31,7 +31,6 @@ const gameBoard = (function(){
         for (const [a, b, c] of winConditions){
             // checks for wins by seeing if all cells are the same and if one of the cells isn't empty
             if (board[a] !== "" && board[a] === board[b] && board[a] === board[c]){
-                resetBoard();
                 return true ;
             }
         }
@@ -67,10 +66,6 @@ const game = (function(){
 
     function getPlayer2Score(){
         return player2.score;
-    }
-
-    function getCurrentPlayer(){
-        return currentPlayer; 
     }
 
     function getCurrentColor(){
@@ -131,14 +126,32 @@ const displayController = (function(){
     const container = document.getElementById("container");
     const nextBtn = document.getElementById("next-round");
     const resetBtn = document.getElementById("reset");
+    const form = document.getElementById("form");
+
     resetBtn.addEventListener("click", () => {
         clearTiles();
         intro();
         gameBoard.resetBoard();
+        game.restartTurn();
     })
+
     nextBtn.addEventListener("click", () => {
         clearTiles();
         gameBoard.resetBoard();
+        render();
+    });
+
+    form.addEventListener("submit", (event) => {
+        const dialog = document.getElementById("intro");
+        event.preventDefault();
+        const formData = new FormData(form);
+        const player1_name =  document.getElementById("player1-label");
+        const player2_name = document.getElementById("player2-label");
+        player1_name.textContent = formData.get("player1_name");
+        player2_name.textContent = formData.get("player2_name");
+        dialog.close();
+        game.resetScores();
+        setScore();
         render();
     });
 
@@ -163,18 +176,7 @@ const displayController = (function(){
     function intro(){
         nextBtn.style.visibility = "hidden";
         const dialog = document.getElementById("intro");
-        const form = document.getElementById("form");
-        const player1_name = document.getElementById("player1-label");
-        const player2_name = document.getElementById("player2-label");
         dialog.showModal();
-        form.addEventListener("submit", (event) => {
-            event.preventDefault();
-            const formData = new FormData(form);
-            player1_name.textContent = formData.get("player1_name");
-            player2_name.textContent = formData.get("player2_name");
-            dialog.close();
-            render();
-        });
     };
 
     // 
@@ -186,6 +188,7 @@ const displayController = (function(){
             tile.removeEventListener("mouseleave", leaveEffect);
             tile.removeEventListener("click", renderTiles);
         }
+        game.restartTurn();
     }
 
     function setScore(){
@@ -220,7 +223,7 @@ const displayController = (function(){
         tile.currentTarget.classList.remove(otherColor);
         tile.currentTarget.classList.add(playerColor);
         game.switchTurn();
-        gameBoard.displayBoard();
+        // gameBoard.displayBoard();
         if (gameBoard.checkWin()){
             game.switchTurn(); // to ensure that the winning player gets the point
             game.incrementCurrentScore();
@@ -228,7 +231,6 @@ const displayController = (function(){
         }
         // logic whenever there is a tie
         else if (gameBoard.isFull()){
-            game.restartTurn();
             game.incrementTies();
             roundOver();
         }
